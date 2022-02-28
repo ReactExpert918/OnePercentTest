@@ -21,39 +21,10 @@ const Dashboard = () => {
       let accounts = await web3.eth.getAccounts();
       if (accounts[0] != null) {
         selectedAccount = accounts[0];
+        console.log("Selected Account is " + selectedAccount);
         setConnected(true);
         getBalance();
-
-        window.ethereum.on("accountsChanged", function (accounts) {
-          if (accounts.length > 0) {
-            selectedAccount = accounts[0];
-            console.log("Selected Account change is" + selectedAccount);
-          } else {
-            setConnected(false);
-            setBalance("NOT Connected");
-            console.error("No account is found");
-          }
-        });
       }
-    }
-    checkConnected();
-  }, []);
-
-  const connect = () => {
-    let provider = window.ethereum;
-    if (typeof provider !== "undefined") {
-      provider
-        .request({ method: "eth_requestAccounts" })
-        .then((accounts) => {
-          selectedAccount = accounts[0];
-          setConnected(true);
-          getBalance();
-          console.log("Selected Account is " + selectedAccount);
-        })
-        .catch((err) => {
-          setConnected(false);
-          console.log(err);
-        });
 
       window.ethereum.on("chainChanged", function () {
         window.location.reload();
@@ -83,6 +54,25 @@ const Dashboard = () => {
         setBalance("NOT Connected");
         console.log("Disconnected from network " + error);
       });
+    }
+    checkConnected();
+  }, []);
+
+  const connect = () => {
+    let provider = window.ethereum;
+    if (typeof provider !== "undefined") {
+      provider
+        .request({ method: "eth_requestAccounts" })
+        .then((accounts) => {
+          selectedAccount = accounts[0];
+          setConnected(true);
+          getBalance();
+          console.log("Selected Account is " + selectedAccount);
+        })
+        .catch((err) => {
+          setConnected(false);
+          console.log(err);
+        });
     } else {
       alert("Please install metamask");
     }
@@ -120,7 +110,7 @@ const Dashboard = () => {
       contract = new web3.eth.Contract(contract_abi, CONTRACT_ADDRESS);
       contract.methods
         .offsetTransaction(value.carbon, value.receipt, value.behalf)
-        .send({ from: selectedAccount, cost: 100000000000 });
+        .send({ from: selectedAccount, cost: 1000000000000000000 });
     }
   };
 
@@ -141,7 +131,7 @@ const Dashboard = () => {
       >
         {!connected ? "Connect Wallet" : "CONNECTED"}
       </Button>
-      <div>MCO2 Balance: {balance}</div>
+      <h3>MCO2 Balance: {balance}</h3>
       <form
         onSubmit={offsetTransaction}
         style={{
@@ -175,7 +165,7 @@ const Dashboard = () => {
           margin="normal"
           required
         />
-        <Button variant="contained" type="submit">
+        <Button variant="contained" type="submit" disabled={!connected && true}>
           Offset Transaction
         </Button>
       </form>
