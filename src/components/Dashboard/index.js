@@ -109,7 +109,8 @@ const Dashboard = () => {
   const handleChange = (e) => {
     value[e.target.name] = e.target.value;
   };
-  const offsetTransaction = async () => {
+  const offsetTransaction = async (e) => {
+    e.preventDefault();
     let provider = window.ethereum;
     const web3 = new Web3(provider);
     let accounts = await web3.eth.getAccounts();
@@ -141,7 +142,8 @@ const Dashboard = () => {
         {!connected ? "Connect Wallet" : "CONNECTED"}
       </Button>
       <div>MCO2 Balance: {balance}</div>
-      <div
+      <form
+        onSubmit={offsetTransaction}
         style={{
           display: "flex",
           flexDirection: "column",
@@ -173,10 +175,10 @@ const Dashboard = () => {
           margin="normal"
           required
         />
-        <Button variant="contained" type="submit" onClick={offsetTransaction}>
+        <Button variant="contained" type="submit">
           Offset Transaction
         </Button>
-      </div>
+      </form>
     </Box>
   );
 };
